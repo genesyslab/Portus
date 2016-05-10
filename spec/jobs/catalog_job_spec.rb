@@ -8,6 +8,10 @@ class CatalogJobMock < CatalogJob
 end
 
 describe CatalogJob do
+  before :each do
+    VCR.turn_on!
+  end
+
   describe "Empty database" do
     it "updates the registry" do
       registry  = create(:registry)

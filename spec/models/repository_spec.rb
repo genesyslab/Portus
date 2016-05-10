@@ -7,7 +7,6 @@
 #  namespace_id :integer
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
-#  marked       :boolean          default("0")
 #
 # Indexes
 #
@@ -27,6 +26,10 @@ describe Repository do
   it { should belong_to(:namespace) }
   it { should have_many(:tags) }
   it { should have_many(:stars) }
+
+  before :each do
+    VCR.turn_on!
+  end
 
   describe "starrable behaviour" do
     let(:user) { create(:user) }

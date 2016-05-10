@@ -113,4 +113,29 @@ describe Namespace do
       expect(name).to eq repo.name
     end
   end
+
+  describe "find_from_event" do
+    let!(:registry)    { create(:registry) }
+    let!(:owner)       { create(:user) }
+    let!(:team)        { create(:team, owners: [owner]) }
+    let!(:namespace)   { create(:namespace, team: team, registry: registry) }
+    let!(:repo)        { create(:repository, namespace: namespace) }
+    let!(:event) do
+      {
+        "request" => { "host" => "#{registry.hostname}" },
+        "target"  => { "repository" => "#{namespace.name}/#{repo.name}" }
+      }
+    end
+
+    it "works for user namespaces" do
+      ns = Namespace.find_from_event(event)
+      expect(ns.id).to eq namespace.id
+    end
+
+    it "works for the global namespace" do
+      event["target"]["repository"] = "portus_global_namespace_1"
+      ns = Namespace.find_from_event(event)
+      expect(ns.id).to eq registry.namespaces.find_by(global: true).id
+    end
+  end
 end

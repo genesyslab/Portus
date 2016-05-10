@@ -35,7 +35,7 @@ class WebhookPolicy < NamespacePolicy
             "(namespaces.public = :public OR team_users.user_id = :user_id) AND " \
             "namespaces.global = :global AND namespaces.name != :username",
             public: true, user_id: user.id, global: false, username: user.username)
-          .pluk(:id)
+          .pluck(:id)
 
         scope
           .includes(:headers, :deliveries)

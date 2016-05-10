@@ -49,6 +49,22 @@ class Namespace < ActiveRecord::Base
     [namespace, name]
   end
 
+  # Find the namespace for the given push event.
+  def self.find_from_event(event)
+    registry = Registry.find_from_event(event)
+    return if registry.nil?
+
+    repo = event["target"]["repository"]
+    if repo.include?("/")
+      namespace_name, = repo.split("/", 2)
+      namespace = registry.namespaces.find_by(name: namespace_name)
+    else
+      namespace = Namespace.find_by(registry: registry, global: true)
+    end
+
+    namespace
+  end
+
   # Returns a String containing the cleaned name for this namespace. The
   # cleaned name will be the registry's hostname if this is a global namespace,
   # or the name of the namespace itself otherwise.
